@@ -1,19 +1,24 @@
-import { DataTypes } from 'sequelize';
+import { Sequelize, DataTypes } from 'sequelize';
 import sequelize from "../db/db-connection";
 
-export const User = sequelize.define('user',{
-    id:{
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true
+export const Usuario = sequelize.define('Usuario', {
+    email: {
+      type: DataTypes.STRING,
+      allowNull: false
     },
-    email:{
-        type: DataTypes.STRING,
-        unique: true,
-        allowNull: false
+    password: {
+      type: DataTypes.STRING,
+      allowNull: false
     },
-    password:{
-        type: DataTypes.STRING,
-        allowNull: false
+    created: {
+      type: DataTypes.DATE,
+      defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+    },
+    updated: {
+      type: DataTypes.DATE,
+      defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
     }
-})
+  }, {
+    tableName: 'usuarios_usuario', 
+    timestamps: false 
+  });

@@ -1,45 +1,40 @@
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
-import { User } from "../models/users";
+import { Usuario } from "../models/users";
 import jwt from "jsonwebtoken";
 
 export const newUser = async (req: Request, res: Response) => {
-
-    const {email, password} = req.body;
-
-    console.log(email);
-    console.log(password);
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    // Validamos si el usuario existe en la base de datos
-
-    const user = await User.findOne({where:{email:email}})
-
-    if(user){
-       return res.status(400).json({
-            msg: `Ya existe un usuario con el email ${email}`
-        })
-    }
+    const { email, password } = req.body;
 
     try {
-        // Guardamos usuario en la base de datos
-        await User.create({
+        // Validamos si el usuario ya existe en la base de datos
+        const existingUser = await Usuario.findOne({ where: { email: email } });
+        if (existingUser) {
+            return res.status(400).json({
+                msg: `Ya existe un usuario con el email ${email}`
+            });
+        }
+
+        // Creamos el usuario
+        const hashedPassword = await bcrypt.hash(password, 10);
+        await Usuario.create({
             email: email,
-            password: hashedPassword
-        })
+            password: hashedPassword,
+        });
+
+        console.log(hashedPassword)
 
         res.json({
-            msg: `Usuario ${email} creado con exito`,
-        })
+            msg: `Usuario ${email} creado con éxito`,
+        });
     } catch (error) {
-        res.status(400).json({
-            msg: 'Ocurrio un error', error
-        })
+        console.error(error);
+        res.status(500).json({
+            msg: 'Ocurrió un error al crear el usuario',
+            error: error
+        });
     }
-
-
-}
+};
 
 export const loginUser = async (req: Request, res: Response) => {
 
@@ -47,9 +42,9 @@ export const loginUser = async (req: Request, res: Response) => {
 
     // Validamos si el usuario existe en la base de datos
 
-    const user: any = await User.findOne({where:{email:email}})
+    const usuario: any = await Usuario.findOne({where:{email:email}})
 
-    if(!user){
+    if(!usuario){
         return res.status(400).json({
             msg: `No existe un usuario con el email ${email} en la bd`
         })
@@ -57,11 +52,11 @@ export const loginUser = async (req: Request, res: Response) => {
 
     // Validamos password
 
-    const passwordValid = await bcrypt.compare(password, user.password)
+    const passwordValid = await bcrypt.compare(password, usuario.password)
     
     if(!passwordValid){
         return res.status(400).json({
-            msg: 'Password incorrecta'
+            msg: `Password incorrecta`
         })
     }
 

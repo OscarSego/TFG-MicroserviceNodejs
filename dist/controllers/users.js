@@ -18,29 +18,30 @@ const users_1 = require("../models/users");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const newUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, password } = req.body;
-    console.log(email);
-    console.log(password);
-    const hashedPassword = yield bcrypt_1.default.hash(password, 10);
-    // Validamos si el usuario existe en la base de datos
-    const user = yield users_1.User.findOne({ where: { email: email } });
-    if (user) {
-        return res.status(400).json({
-            msg: `Ya existe un usuario con el email ${email}`
-        });
-    }
     try {
-        // Guardamos usuario en la base de datos
-        yield users_1.User.create({
+        // Validamos si el usuario ya existe en la base de datos
+        const existingUser = yield users_1.Usuario.findOne({ where: { email: email } });
+        if (existingUser) {
+            return res.status(400).json({
+                msg: `Ya existe un usuario con el email ${email}`
+            });
+        }
+        // Creamos el usuario
+        const hashedPassword = yield bcrypt_1.default.hash(password, 10);
+        yield users_1.Usuario.create({
             email: email,
-            password: hashedPassword
+            password: hashedPassword,
         });
+        console.log(hashedPassword);
         res.json({
-            msg: `Usuario ${email} creado con exito`,
+            msg: `Usuario ${email} creado con éxito`,
         });
     }
     catch (error) {
-        res.status(400).json({
-            msg: 'Ocurrio un error', error
+        console.error(error);
+        res.status(500).json({
+            msg: 'Ocurrió un error al crear el usuario',
+            error: error
         });
     }
 });
@@ -48,17 +49,17 @@ exports.newUser = newUser;
 const loginUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, password } = req.body;
     // Validamos si el usuario existe en la base de datos
-    const user = yield users_1.User.findOne({ where: { email: email } });
-    if (!user) {
+    const usuario = yield users_1.Usuario.findOne({ where: { email: email } });
+    if (!usuario) {
         return res.status(400).json({
             msg: `No existe un usuario con el email ${email} en la bd`
         });
     }
     // Validamos password
-    const passwordValid = yield bcrypt_1.default.compare(password, user.password);
+    const passwordValid = yield bcrypt_1.default.compare(password, usuario.password);
     if (!passwordValid) {
         return res.status(400).json({
-            msg: 'Password incorrecta'
+            msg: `Password incorrecta`
         });
     }
     // Generar el token

@@ -1,7 +1,7 @@
 import express from "express";
 import routerUser from "../routes/users";
 import cors from "cors";
-import { User } from "./users";
+import { Usuario } from "./users";
 
 export class Server {
 
@@ -39,7 +39,7 @@ export class Server {
 
     async dbConnect(){
         try {
-            await User.sync();
+            await Usuario.sync();
         } catch (error) {
             console.log('Unable to connect to the database', error);
         }

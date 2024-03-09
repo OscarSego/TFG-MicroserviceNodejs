@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Server = void 0;
 const express_1 = __importDefault(require("express"));
 const users_1 = __importDefault(require("../routes/users"));
+const cors_1 = __importDefault(require("cors"));
 const users_2 = require("./users");
 class Server {
     constructor() {
@@ -36,11 +37,13 @@ class Server {
     midleware() {
         // Parseo body
         this.app.use(express_1.default.json());
+        // Cors
+        this.app.use((0, cors_1.default)());
     }
     dbConnect() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
-                yield users_2.User.sync();
+                yield users_2.Usuario.sync();
             }
             catch (error) {
                 console.log('Unable to connect to the database', error);
