@@ -1,7 +1,9 @@
 import { Request, Response } from "express";
 import bcrypt from "bcrypt";
 import { Usuario } from "../models/users";
+import { Role } from "../models/roles";
 import jwt from "jsonwebtoken";
+import { ModelCtor } from 'sequelize/types';
 
 export const newUser = async (req: Request, res: Response) => {
     const { email, password } = req.body;
@@ -17,12 +19,21 @@ export const newUser = async (req: Request, res: Response) => {
 
         // Creamos el usuario
         const hashedPassword = await bcrypt.hash(password, 10);
-        await Usuario.create({
+        const newUser = await (Usuario as ModelCtor<any>).create({
             email: email,
             password: hashedPassword,
         });
 
-        console.log(hashedPassword)
+        const [userRole, created] = await Role.findOrCreate({
+            where: { role: 'usuario' }, 
+        });
+
+        // Asociamos el usuario con el rol
+        if (userRole) {
+            await newUser.addRole(userRole);
+        } else {
+            throw new Error('El rol de usuario no se encontró en la base de datos.');
+        }
 
         res.json({
             msg: `Usuario ${email} creado con éxito`,

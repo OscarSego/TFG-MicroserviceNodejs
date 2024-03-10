@@ -1,5 +1,6 @@
 import { Sequelize, DataTypes } from 'sequelize';
 import sequelize from "../db/db-connection";
+import { Role } from './roles';
 
 export const Usuario = sequelize.define('Usuario', {
     email: {
@@ -22,3 +23,4 @@ export const Usuario = sequelize.define('Usuario', {
     tableName: 'usuarios_usuario', 
     timestamps: false 
   });
+

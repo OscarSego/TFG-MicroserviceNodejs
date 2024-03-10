@@ -15,6 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.loginUser = exports.newUser = void 0;
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const users_1 = require("../models/users");
+const roles_1 = require("../models/roles");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const newUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { email, password } = req.body;
@@ -28,11 +29,20 @@ const newUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         }
         // Creamos el usuario
         const hashedPassword = yield bcrypt_1.default.hash(password, 10);
-        yield users_1.Usuario.create({
+        const newUser = yield users_1.Usuario.create({
             email: email,
             password: hashedPassword,
         });
-        console.log(hashedPassword);
+        const [userRole, created] = yield roles_1.Role.findOrCreate({
+            where: { role: 'usuario' },
+        });
+        // Asociamos el usuario con el rol
+        if (userRole) {
+            yield newUser.addRole(userRole);
+        }
+        else {
+            throw new Error('El rol de usuario no se encontró en la base de datos.');
+        }
         res.json({
             msg: `Usuario ${email} creado con éxito`,
         });

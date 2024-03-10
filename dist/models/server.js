@@ -17,6 +17,7 @@ const express_1 = __importDefault(require("express"));
 const users_1 = __importDefault(require("../routes/users"));
 const cors_1 = __importDefault(require("cors"));
 const users_2 = require("./users");
+const roles_1 = require("./roles");
 class Server {
     constructor() {
         this.app = (0, express_1.default)();
@@ -44,6 +45,9 @@ class Server {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 yield users_2.Usuario.sync();
+                yield roles_1.Role.sync();
+                users_2.Usuario.belongsToMany(roles_1.Role, { through: 'usuarios_usuario_role', foreignKey: 'usuario_id', timestamps: false });
+                roles_1.Role.belongsToMany(users_2.Usuario, { through: 'usuarios_usuario_role', foreignKey: 'role_id', timestamps: false });
             }
             catch (error) {
                 console.log('Unable to connect to the database', error);
