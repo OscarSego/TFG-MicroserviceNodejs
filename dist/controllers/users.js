@@ -33,9 +33,11 @@ const newUser = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
             email: email,
             password: hashedPassword,
         });
-        const [userRole, created] = yield roles_1.Role.findOrCreate({
-            where: { role: 'usuario' },
-        });
+        // Verificamos si el rol de usuario existe, si no, lo creamos
+        let userRole = yield roles_1.Role.findOne({ where: { role: 'usuario' } });
+        if (!userRole) {
+            userRole = yield roles_1.Role.create({ role: 'usuario' });
+        }
         // Asociamos el usuario con el rol
         if (userRole) {
             yield newUser.addRole(userRole);

@@ -24,9 +24,11 @@ export const newUser = async (req: Request, res: Response) => {
             password: hashedPassword,
         });
 
-        const [userRole, created] = await Role.findOrCreate({
-            where: { role: 'usuario' }, 
-        });
+        // Verificamos si el rol de usuario existe, si no, lo creamos
+        let userRole = await Role.findOne({ where: { role: 'usuario' } });
+        if (!userRole) {
+            userRole = await Role.create({ role: 'usuario' });
+        }
 
         // Asociamos el usuario con el rol
         if (userRole) {
