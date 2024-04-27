@@ -18,6 +18,6 @@ export const Role = sequelize.define('Role', {
         defaultValue: DataTypes.NOW
     }
 }, {
-    tableName: 'usuarios_role',
+    tableName: 'Usuarios_role',
     timestamps: false
 });

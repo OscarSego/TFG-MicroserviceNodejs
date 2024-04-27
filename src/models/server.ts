@@ -43,8 +43,8 @@ export class Server {
             await Usuario.sync();
             await Role.sync();
 
-            Usuario.belongsToMany(Role, { through: 'usuarios_usuario_role', foreignKey: 'usuario_id', timestamps: false });
-            Role.belongsToMany(Usuario, { through: 'usuarios_usuario_role',foreignKey: 'role_id', timestamps: false });
+            Usuario.belongsToMany(Role, { through: 'Usuarios_usuario_role', foreignKey: 'usuario_id', timestamps: false });
+            Role.belongsToMany(Usuario, { through: 'Usuarios_usuario_role',foreignKey: 'role_id', timestamps: false });
 
         } catch (error) {
             console.log('Unable to connect to the database', error);
