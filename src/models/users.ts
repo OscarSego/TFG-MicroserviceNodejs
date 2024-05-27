@@ -20,7 +20,7 @@ export const Usuario = sequelize.define('Usuario', {
       defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
     }
   }, {
-    tableName: 'Usuarios_usuario', 
+    tableName: 'usuarios_usuario', 
     timestamps: false 
   });
 
